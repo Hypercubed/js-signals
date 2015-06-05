@@ -5,7 +5,7 @@
  * JS Signals <http://millermedeiros.github.com/js-signals/>
  * Released under the MIT license
  * Author: Miller Medeiros
- * Version: 1.1.0 - Build: 273 (2015/04/23 12:32 PM)
+ * Version: 1.1.0 - Build: 279 (2015/06/05 11:50 AM)
  */
 
 (function(global){
@@ -366,9 +366,13 @@
             if (! this.active) {
                 return;
             }
+            
+            var paramsArr = [];
+            for (var i=0; i < arguments.length; i++) {
+                paramsArr.push(arguments[i]);
+            }
 
-            var paramsArr = Array.prototype.slice.call(arguments),
-                n = this._bindings.length,
+            var n = this._bindings.length,
                 bindings;
 
             if (this.memorize) {
