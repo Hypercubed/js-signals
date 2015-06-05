@@ -202,10 +202,11 @@
             if (! this.active) {
                 return;
             }
-            
-            var paramsArr = [];
-            for (var i=0; i < arguments.length; i++) {
-                paramsArr.push(arguments[i]);
+
+            // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            var paramsArr = new Array(arguments.length), len = arguments.length;
+            for (var i=0; i < len; ++i) {
+                paramsArr[i] = arguments[i];
             }
 
             var n = this._bindings.length,
@@ -272,4 +273,3 @@
      */
     // alias for backwards compatibility (see #gh-44)
     signals.Signal = Signal;
-

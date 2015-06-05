@@ -54,6 +54,21 @@
         this._priority = priority || 0;
     }
 
+    // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#2-unsupported-syntax
+    function tryCatch(fn, ctx, args) {
+      try {
+        return fn.apply(ctx.context, args);
+      } catch(e) {
+        setTimeout(function() {
+          throw e;
+        }, 0);
+      } finally {
+        if (ctx._isOnce) {
+          ctx.detach();
+        }
+      }
+    }
+
     SignalBinding.prototype = {
 
         /**
@@ -75,22 +90,11 @@
          * @return {*} Value returned by the listener.
          */
         execute : function (paramsArr) {
-            var handlerReturn, params;
             if (this.active && !!this._listener) {
-                params = this.params? this.params.concat(paramsArr) : paramsArr;
-                try {
-                    handlerReturn = this._listener.apply(this.context, params);
-                } catch(e) {
-                    setTimeout(function() {
-                        throw e;
-                    }, 0);
-                } finally {
-                    if (this._isOnce) {
-                        this.detach();
-                    }
-                }
+                var params = this.params? this.params.concat(paramsArr) : paramsArr;
+                return tryCatch(this._listener, this, params);
             }
-            return handlerReturn;
+            return undefined;
         },
 
         /**

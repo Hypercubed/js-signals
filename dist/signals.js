@@ -5,7 +5,7 @@
  * JS Signals <http://millermedeiros.github.com/js-signals/>
  * Released under the MIT license
  * Author: Miller Medeiros
- * Version: 1.1.0 - Build: 279 (2015/06/05 11:50 AM)
+ * Version: 1.1.0 - Build: 289 (2015/06/05 04:26 PM)
  */
 
 (function(global){
@@ -66,6 +66,21 @@
         this._priority = priority || 0;
     }
 
+    // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#2-unsupported-syntax
+    function tryCatch(fn, ctx, args) {
+      try {
+        return fn.apply(ctx.context, args);
+      } catch(e) {
+        setTimeout(function() {
+          throw e;
+        }, 0);
+      } finally {
+        if (ctx._isOnce) {
+          ctx.detach();
+        }
+      }
+    }
+
     SignalBinding.prototype = {
 
         /**
@@ -87,22 +102,11 @@
          * @return {*} Value returned by the listener.
          */
         execute : function (paramsArr) {
-            var handlerReturn, params;
             if (this.active && !!this._listener) {
-                params = this.params? this.params.concat(paramsArr) : paramsArr;
-                try {
-                    handlerReturn = this._listener.apply(this.context, params);
-                } catch(e) {
-                    setTimeout(function() {
-                        throw e;
-                    }, 0);
-                } finally {
-                    if (this._isOnce) {
-                        this.detach();
-                    }
-                }
+                var params = this.params? this.params.concat(paramsArr) : paramsArr;
+                return tryCatch(this._listener, this, params);
             }
-            return handlerReturn;
+            return undefined;
         },
 
         /**
@@ -366,10 +370,11 @@
             if (! this.active) {
                 return;
             }
-            
-            var paramsArr = [];
-            for (var i=0; i < arguments.length; i++) {
-                paramsArr.push(arguments[i]);
+
+            // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            var paramsArr = new Array(arguments.length), len = arguments.length;
+            for (var i=0; i < len; ++i) {
+                paramsArr[i] = arguments[i];
             }
 
             var n = this._bindings.length,
@@ -436,7 +441,6 @@
      */
     // alias for backwards compatibility (see #gh-44)
     signals.Signal = Signal;
-
 
 
     //exports to multiple environments
