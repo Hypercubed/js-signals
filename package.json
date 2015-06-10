@@ -12,7 +12,7 @@
   ],
   "homepage": "http://millermedeiros.github.com/js-signals/",
   "version": "1.1.0",
-  "build": "289",
+  "build": "309",
   "author": {
     "name": "Miller Medeiros",
     "url": "http://blog.millermedeiros.com/"
@@ -38,7 +38,7 @@
   },
   "scripts": {
     "test": "jasmine-node test/spec",
-    "opt-test": "node --trace_opt --trace_deopt ./test/opt-test.js"
+    "opt-test": "node --allow-natives-syntax opt-test.js"
   },
   "directories": {
     "doc": "./dist/docs"

@@ -204,7 +204,7 @@
             }
 
             // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
-            var paramsArr = new Array(arguments.length), len = arguments.length;
+            var len = arguments.length, paramsArr = new Array(len);
             for (var i=0; i < len; ++i) {
                 paramsArr[i] = arguments[i];
             }

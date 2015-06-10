@@ -5,7 +5,7 @@
  * JS Signals <http://millermedeiros.github.com/js-signals/>
  * Released under the MIT license
  * Author: Miller Medeiros
- * Version: 1.1.0 - Build: 289 (2015/06/05 04:26 PM)
+ * Version: 1.1.0 - Build: 309 (2015/06/10 06:07 PM)
  */
 
 (function(global){
@@ -371,8 +371,15 @@
                 return;
             }
 
+            // was:
+            //var paramsArr = Array.prototype.slice.call(arguments);
+
+            // test:
+            //var paramsArr = [];
+            //Array.prototype.push.apply(paramsArr, arguments);
+
             // See https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
-            var paramsArr = new Array(arguments.length), len = arguments.length;
+            var len = arguments.length, paramsArr = new Array(len);
             for (var i=0; i < len; ++i) {
                 paramsArr[i] = arguments[i];
             }
